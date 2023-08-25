@@ -8,7 +8,7 @@ from langchain.llms import OpenAI
 import os
 from langchain import PromptTemplate, LLMChain
 
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = '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'
 
 # from langchain.chains.summarize import load_summarize_chain
 # from langchain.prompts import PromptTemplate

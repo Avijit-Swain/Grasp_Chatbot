@@ -3,18 +3,17 @@ import streamlit as st
 # from io import StringIO
 # from langchain.text_splitter import CharacterTextSplitter
 
-# import openai
-# from langchain.llms import OpenAI
-# import os
+import openai
+from langchain.llms import OpenAI
+import os
+from langchain import PromptTemplate, LLMChain
+
+os.environ['OPENAI_API_KEY'] = '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'
 
 # from langchain.chains.summarize import load_summarize_chain
 # from langchain.prompts import PromptTemplate
 # import textwrap
 # import time
-
-# os.environ["OPENAI_API_KEY"] = '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'
-
-# llm = OpenAI(temperature=0)
 
 st.title('Welcome to Grasp')
 surgery_type = st.selectbox('Select your surgery type',
@@ -30,6 +29,64 @@ q4 = st.select_slider('Q4) How much of your regular activity were you able to ac
                       range(0,101))
 q5 = st.select_slider('Q5) What percentage of the pain medication were you able to intake? Express it in percentages between 0-100.',
                       range(0,101))
+
+
+llm = OpenAI(temperature=0)
+
+st.header('AI Conversation')
+# question = st.text_input('Please put your question here:')
+
+# if question:
+#     output = 'Ans: ' + llm(question)
+#     st.write(output)
+
+prompt = PromptTemplate(
+    input_variables = ['surgery_type','day','q1','q2','q3','q4','q5'],
+    template = '''You are a knee replacement surgeon with 30 years of experience, who performed a knee replacement surgery 
+    on me yesterday. Today is day 1 of the post operation recovery process. Here are the questions to which I have 
+    already provided my responses. They are as follows in between double quotes:
+
+    """
+    Q1) Select your surgery type.
+    Response: {surgery_type} 
+    Q2) Select your day of recovery.
+    Response: {day}
+    Q3) How would you rate your current level of pain? Express it in percentages between 0-100.
+    Response: {q1} 
+    Q4) What percentage of your regular diet did you have?? Express it in percentages between 0-100.
+    Response: {q2}
+    Q5) How was your sleep? Select an option:
+    Response: {q3}
+    Q6) How much of your regular activity were you able to accomplish? Express it in percentages between 0-100.
+    Response: {q4}
+    Q7) What percentage of the pain medication were you able to intake? Express it in percentages between 0-100.
+    Response: {q5} 
+   
+    Now, you need to ask me 5 open ended questions to investigate further about my condition based on the above responses. 
+
+    The questions that you ask me should be as if a real surgeon is asking in real life to understand the patient's condition 
+    in depth. Remember you are a real surgeon who knows what question to ask after another and in which order.
+
+    Tone: conversational, spartan, use less corporate jargon'''
+)
+# st.write(prompt.format(surgery_type = surgery_type, day = day, q1 = q1,
+#                         q2 = q2, q3 = q3, q4 = q4, q5 = q5))
+
+button = st.button('Generate Dynamic Questions')
+
+if button:
+    chain = LLMChain(llm=llm, prompt=prompt)
+    response = chain.run(surgery_type = surgery_type, day = day, q1 = q1,
+                      q2 = q2, q3 = q3, q4 = q4, q5 = q5)
+    st.write(response)
+    
+
+
+
+
+
+
+
 
 
 
